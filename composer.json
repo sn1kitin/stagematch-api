@@ -1,0 +1,14 @@
+{
+    "name": "semen/stagematch-api",
+    "description": "StageMatch API in vanilla PHP - studenten en bedrijven matchen op skills",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "ext-pdo": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}
