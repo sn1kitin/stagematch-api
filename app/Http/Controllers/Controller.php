@@ -1,6 +1,93 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\ApiResponse;
+
 abstract class Controller
 {
+    // regels zoals 'required|string|max:100', stuurt meteen een 422 als er fouten zijn
+    // $partial is voor PATCH, dan worden alleen de meegestuurde velden gecontroleerd
+    protected function validate(array $data, array $rules, bool $partial = false): void
+    {
+        $errors = [];
+
+        if ($partial && empty(array_intersect_key($data, $rules))) {
+            ApiResponse::error(ApiResponse::UNPROCESSABLE, 'Stuur minstens een van deze velden mee: ' . implode(', ', array_keys($rules)) . '.');
+        }
+
+        foreach ($rules as $field => $ruleString) {
+            $fieldRules = explode('|', $ruleString);
+            $value = $data[$field] ?? null;
+
+            if ($partial && !array_key_exists($field, $data)) {
+                continue;
+            }
+
+            if ($value === null || $value === '') {
+                if (in_array('required', $fieldRules)) {
+                    $errors[$field] = "Het veld {$field} is verplicht.";
+                }
+                continue;
+            }
+
+            foreach ($fieldRules as $rule) {
+                $error = $this->checkRule($field, $value, $rule);
+
+                if ($error !== null) {
+                    $errors[$field] = $error;
+                    break;
+                }
+            }
+        }
+
+        if (!empty($errors)) {
+            ApiResponse::error(ApiResponse::UNPROCESSABLE, 'De invoer is niet geldig.', $errors);
+        }
+    }
+
+    private function checkRule(string $field, mixed $value, string $rule): ?string
+    {
+        [$name, $param] = array_pad(explode(':', $rule, 2), 2, null);
+
+        switch ($name) {
+            case 'string':
+                if (!is_string($value)) {
+                    return "Het veld {$field} moet tekst zijn.";
+                }
+                break;
+
+            case 'int':
+                if (filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) === false) {
+                    return "Het veld {$field} moet een positief geheel getal zijn.";
+                }
+                break;
+
+            case 'email':
+                if (!is_string($value) || filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
+                    return "Het veld {$field} moet een geldig emailadres zijn.";
+                }
+                break;
+
+            case 'min':
+                if (is_string($value) && mb_strlen($value) < (int) $param) {
+                    return "Het veld {$field} moet minstens {$param} tekens zijn.";
+                }
+                break;
+
+            case 'max':
+                if (is_string($value) && mb_strlen($value) > (int) $param) {
+                    return "Het veld {$field} mag maximaal {$param} tekens zijn.";
+                }
+                break;
+
+            // exists:App\Models\SkillModel -> id moet in die tabel staan (altijd na int zetten)
+            case 'exists':
+                if ($param::find((int) $value) === null) {
+                    return "Het veld {$field} verwijst naar id {$value}, maar die bestaat niet.";
+                }
+                break;
+        }
+
+        return null;
+    }
 }

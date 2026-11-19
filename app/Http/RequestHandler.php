@@ -48,6 +48,37 @@ class RequestHandler
         $this->key = implode('/', $parts);
     }
 
+    // json body of gewone formdata
+    private function getBody(): array
+    {
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+
+        if (str_contains($contentType, 'application/json')) {
+            $body = file_get_contents('php://input');
+
+            if (trim($body) === '') {
+                return [];
+            }
+
+            $data = json_decode($body, true);
+
+            if (!is_array($data)) {
+                ApiResponse::error(ApiResponse::BAD_REQUEST, 'De body bevat geen geldige JSON.');
+            }
+
+            return $data;
+        }
+
+        if ($this->method === 'POST') {
+            return $_POST;
+        }
+
+        // bij PUT en PATCH vult php $_POST niet, dus zelf de body uitlezen
+        parse_str(file_get_contents('php://input'), $data);
+
+        return $data;
+    }
+
     public function handle(): void
     {
         $route = $this->routes[$this->method][$this->key] ?? null;
@@ -59,6 +90,13 @@ class RequestHandler
         [$class, $action] = $route;
         $controller = new $class();
 
-        $controller->$action(...$this->ids);
+        // eerst de ids uit de url, daarna de body
+        $args = $this->ids;
+
+        if (in_array($this->method, ['POST', 'PUT', 'PATCH'])) {
+            $args[] = $this->getBody();
+        }
+
+        $controller->$action(...$args);
     }
 }
