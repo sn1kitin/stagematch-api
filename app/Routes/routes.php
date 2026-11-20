@@ -11,6 +11,7 @@ return [
         'skills/{id}' => [SkillController::class, 'show'],
         'vacancies' => [VacancyController::class, 'index'],
         'vacancies/{id}' => [VacancyController::class, 'show'],
+        'me' => [AuthController::class, 'me'],
     ],
     'POST' => [
         'register' => [AuthController::class, 'register'],

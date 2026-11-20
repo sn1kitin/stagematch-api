@@ -2,6 +2,10 @@
     Options -MultiViews -Indexes
     RewriteEngine On
 
+    # apache geeft de Authorization header anders niet door aan php
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
     # alles naar index.php, de url wordt uitgelezen in de RequestHandler
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d

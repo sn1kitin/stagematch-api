@@ -80,6 +80,13 @@ abstract class Controller
                 }
                 break;
 
+            // in:student,company
+            case 'in':
+                if (!in_array($value, explode(',', $param), true)) {
+                    return "Het veld {$field} moet een van deze waarden zijn: {$param}.";
+                }
+                break;
+
             // exists:App\Models\SkillModel -> id moet in die tabel staan (altijd na int zetten)
             case 'exists':
                 if ($param::find((int) $value) === null) {

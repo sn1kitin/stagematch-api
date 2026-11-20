@@ -14,7 +14,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:255',
             'password' => 'required|string|min:8',
-            'role' => 'required|string',
+            'role' => 'required|in:student,company',
         ]);
 
         if (UserModel::emailTaken($data['email'])) {
@@ -56,5 +56,11 @@ class AuthController extends Controller
         UserModel::setToken($user['id'], null);
 
         ApiResponse::send(null);
+    }
+
+    // GET /me
+    public function me(): void
+    {
+        ApiResponse::send(Auth::requireUser());
     }
 }
