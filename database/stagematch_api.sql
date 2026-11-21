@@ -1,6 +1,7 @@
 CREATE DATABASE IF NOT EXISTS `stagematch_api_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `stagematch_api_db`;
 
+DROP TABLE IF EXISTS `student_skills`;
 DROP TABLE IF EXISTS `vacancies`;
 DROP TABLE IF EXISTS `skills`;
 DROP TABLE IF EXISTS `users`;
@@ -19,6 +20,14 @@ CREATE TABLE `users` (
 CREATE TABLE `skills` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(50) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `student_skills` (
+    `user_id` INT UNSIGNED NOT NULL,
+    `skill_id` INT UNSIGNED NOT NULL,
+    PRIMARY KEY (`user_id`, `skill_id`),
+    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`skill_id`) REFERENCES `skills` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `vacancies` (
@@ -46,6 +55,14 @@ INSERT INTO `skills` (`name`) VALUES
 ('Git'), ('Laravel'), ('React'), ('Vue'), ('Node.js'),
 ('Python'), ('Java'), ('C#'), ('Docker'), ('Linux'),
 ('REST API'), ('Figma'), ('Scrum'), ('Engels'), ('Communicatie');
+
+-- jan: PHP, SQL, Git, HTML, CSS, REST API
+-- sara: JavaScript, React, HTML, CSS, Figma
+-- tim: Python, SQL, Linux, Docker
+INSERT INTO `student_skills` (`user_id`, `skill_id`) VALUES
+(1, 1), (1, 5), (1, 6), (1, 3), (1, 4), (1, 16),
+(2, 2), (2, 8), (2, 3), (2, 4), (2, 17),
+(3, 11), (3, 5), (3, 15), (3, 14);
 
 INSERT INTO `vacancies` (`company_id`, `title`, `description`, `location`, `created_at`) VALUES
 (4, 'Stage back-end developer', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 'Amsterdam', '2026-10-05 10:00:00'),
