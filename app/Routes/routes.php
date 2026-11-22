@@ -15,6 +15,7 @@ return [
         'vacancies/{id}' => [VacancyController::class, 'show'],
         'me' => [AuthController::class, 'me'],
         'me/skills' => [StudentSkillController::class, 'index'],
+        'me/vacancies' => [VacancyController::class, 'mine'],
     ],
     'POST' => [
         'register' => [AuthController::class, 'register'],
@@ -23,7 +24,15 @@ return [
         'me/skills' => [StudentSkillController::class, 'store'],
         'vacancies' => [VacancyController::class, 'create'],
     ],
+    // PUT = alle velden, PATCH = alleen wat je meestuurt
+    'PUT' => [
+        'vacancies/{id}' => [VacancyController::class, 'update'],
+    ],
+    'PATCH' => [
+        'vacancies/{id}' => [VacancyController::class, 'patch'],
+    ],
     'DELETE' => [
         'me/skills/{id}' => [StudentSkillController::class, 'destroy'],
+        'vacancies/{id}' => [VacancyController::class, 'destroy'],
     ],
 ];

@@ -26,13 +26,16 @@ class VacancyController extends Controller
     // GET /vacancies/{id}
     public function show(int $id): void
     {
-        $vacancy = VacancyModel::find($id);
+        ApiResponse::send(VacancyModel::withDetails($this->findOrFail($id)));
+    }
 
-        if ($vacancy === null) {
-            ApiResponse::error(ApiResponse::NOT_FOUND, "Vacature {$id} bestaat niet.");
-        }
+    // GET /me/vacancies -> vacatures van het ingelogde bedrijf
+    public function mine(): void
+    {
+        $company = Auth::requireRole('company');
+        $vacancies = array_map([VacancyModel::class, 'withDetails'], VacancyModel::where('company_id', $company['id']));
 
-        ApiResponse::send(VacancyModel::withDetails($vacancy));
+        ApiResponse::send($vacancies);
     }
 
     // POST /vacancies
@@ -49,6 +52,63 @@ class VacancyController extends Controller
 
         header('Location: ' . ApiResponse::url('vacancies/' . $vacancy['id']));
         ApiResponse::send(VacancyModel::withDetails($vacancy), ApiResponse::CREATED);
+    }
+
+    // PUT /vacancies/{id}
+    public function update(int $id, array $data): void
+    {
+        $this->save($id, $data, false);
+    }
+
+    // PATCH /vacancies/{id}
+    public function patch(int $id, array $data): void
+    {
+        $this->save($id, $data, true);
+    }
+
+    private function save(int $id, array $data, bool $partial): void
+    {
+        $vacancy = $this->findOrFail($id);
+        Auth::requireRole('company');
+
+        unset($data['company_id']);
+
+        $this->validate($data, self::RULES, $partial);
+
+        if (isset($data['skills'])) {
+            $this->validateSkills($data['skills']);
+            VacancyModel::setSkills($id, $data['skills']);
+        }
+
+        // alleen skills meegestuurd, dan hoeft de vacature zelf niet aangepast
+        if (!empty(array_intersect_key($data, array_flip(['title', 'description', 'location'])))) {
+            $vacancy = VacancyModel::update($id, $data);
+        }
+
+        ApiResponse::send(VacancyModel::withDetails($vacancy));
+    }
+
+    // DELETE /vacancies/{id}
+    public function destroy(int $id): void
+    {
+        $vacancy = $this->findOrFail($id);
+        Auth::requireRole('company');
+
+        $vacancy = VacancyModel::withDetails($vacancy);
+        VacancyModel::delete($id);
+
+        ApiResponse::send($vacancy);
+    }
+
+    private function findOrFail(int $id): array
+    {
+        $vacancy = VacancyModel::find($id);
+
+        if ($vacancy === null) {
+            ApiResponse::error(ApiResponse::NOT_FOUND, "Vacature {$id} bestaat niet.");
+        }
+
+        return $vacancy;
     }
 
     // elke skill moet een geldig id zijn dat in de skills tabel staat
