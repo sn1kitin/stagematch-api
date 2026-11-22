@@ -22,4 +22,7 @@ return [
         'logout' => [AuthController::class, 'logout'],
         'me/skills' => [StudentSkillController::class, 'store'],
     ],
+    'DELETE' => [
+        'me/skills/{id}' => [StudentSkillController::class, 'destroy'],
+    ],
 ];

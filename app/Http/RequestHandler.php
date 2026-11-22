@@ -5,7 +5,7 @@ class RequestHandler
 {
     private array $routes;
     private string $method;
-    // bv skills/{id}
+    // bv vacancies/{id}/applications
     private string $key = '';
     private array $ids = [];
 
@@ -29,15 +29,15 @@ class RequestHandler
 
         $segments = array_values(array_filter(explode('/', strtolower($path)), fn($s) => $s !== ''));
 
-        // vacancies/5/applications -> even posities zijn resources, oneven posities zijn ids
+        // een getal is een id, de rest is een resource. Om en om werkt niet meer door me/skills/3
         $parts = [];
-        foreach ($segments as $i => $segment) {
-            if ($i % 2 === 0) {
+        foreach ($segments as $segment) {
+            if (!ctype_digit($segment)) {
                 $parts[] = $segment;
                 continue;
             }
 
-            if (!ctype_digit($segment) || (int) $segment < 1) {
+            if ((int) $segment < 1) {
                 ApiResponse::error(ApiResponse::BAD_REQUEST, 'Het id moet een positief geheel getal zijn.');
             }
 
