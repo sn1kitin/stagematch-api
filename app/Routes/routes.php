@@ -21,6 +21,7 @@ return [
         'login' => [AuthController::class, 'login'],
         'logout' => [AuthController::class, 'logout'],
         'me/skills' => [StudentSkillController::class, 'store'],
+        'vacancies' => [VacancyController::class, 'create'],
     ],
     'DELETE' => [
         'me/skills/{id}' => [StudentSkillController::class, 'destroy'],

@@ -56,6 +56,15 @@ class ApiResponse
         exit;
     }
 
+    // volledige url voor de Location header, bv http://localhost/stagematch-api/vacancies/5
+    public static function url(string $path): string
+    {
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+
+        return "{$scheme}://{$_SERVER['HTTP_HOST']}{$base}/{$path}";
+    }
+
     private static function headers(int $status): void
     {
         http_response_code($status);

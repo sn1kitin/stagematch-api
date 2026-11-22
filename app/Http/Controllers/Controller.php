@@ -87,6 +87,12 @@ abstract class Controller
                 }
                 break;
 
+            case 'array':
+                if (!is_array($value) || !array_is_list($value)) {
+                    return "Het veld {$field} moet een lijst zijn, bv [1, 2, 3].";
+                }
+                break;
+
             // exists:App\Models\SkillModel -> id moet in die tabel staan (altijd na int zetten)
             case 'exists':
                 if ($param::find((int) $value) === null) {
