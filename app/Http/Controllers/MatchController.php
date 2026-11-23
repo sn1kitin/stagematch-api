@@ -5,6 +5,7 @@ use App\Http\ApiResponse;
 use App\Http\Auth;
 use App\Models\StudentSkillModel;
 use App\Models\VacancyModel;
+use App\Services\Matcher;
 
 class MatchController extends Controller
 {
@@ -17,24 +18,7 @@ class MatchController extends Controller
         $matches = [];
         foreach (VacancyModel::all() as $vacancy) {
             $vacancy = VacancyModel::withDetails($vacancy);
-
-            $matched = [];
-            $missing = [];
-            foreach ($vacancy['skills'] as $skill) {
-                if (in_array($skill['id'], $skillIds)) {
-                    $matched[] = $skill;
-                } else {
-                    $missing[] = $skill;
-                }
-            }
-
-            // geen gevraagde skills = iedereen past
-            $total = count($vacancy['skills']);
-            $vacancy['match_percentage'] = $total === 0 ? 100 : (int) round(count($matched) / $total * 100);
-            $vacancy['matched_skills'] = $matched;
-            $vacancy['missing_skills'] = $missing;
-
-            $matches[] = $vacancy;
+            $matches[] = array_merge($vacancy, Matcher::match($vacancy['skills'], $skillIds));
         }
 
         // bij gelijk percentage de vacature met minder ontbrekende skills eerst

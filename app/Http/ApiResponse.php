@@ -12,6 +12,7 @@ class ApiResponse
     public const UNAUTHORIZED = 401;
     public const FORBIDDEN = 403;
     public const NOT_FOUND = 404;
+    public const METHOD_NOT_ALLOWED = 405;
     public const CONFLICT = 409;
     public const UNPROCESSABLE = 422;
     public const SERVER_ERROR = 500;
@@ -23,6 +24,7 @@ class ApiResponse
         401 => 'Unauthorized',
         403 => 'Forbidden',
         404 => 'Not Found',
+        405 => 'Method Not Allowed',
         409 => 'Conflict',
         422 => 'Unprocessable Content',
         500 => 'Internal Server Error',
@@ -56,6 +58,17 @@ class ApiResponse
         exit;
     }
 
+    // antwoord op de preflight van de browser (OPTIONS)
+    public static function preflight(): void
+    {
+        header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Accept, Authorization');
+        header('Access-Control-Max-Age: 86400');
+
+        // ook hier de vaste json structuur
+        self::send(null);
+    }
+
     // volledige url voor de Location header, bv http://localhost/stagematch-api/vacancies/5
     public static function url(string $path): string
     {
@@ -68,6 +81,8 @@ class ApiResponse
     private static function headers(int $status): void
     {
         http_response_code($status);
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Expose-Headers: Location');
         header('Content-Type: application/json; charset=utf-8');
     }
 

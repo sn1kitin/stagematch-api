@@ -15,6 +15,8 @@ return [
         'students/{id}/skills' => [StudentSkillController::class, 'forStudent'],
         'vacancies' => [VacancyController::class, 'index'],
         'vacancies/{id}' => [VacancyController::class, 'show'],
+        'vacancies/{id}/applications' => [ApplicationController::class, 'forVacancy'],
+        'applications/{id}' => [ApplicationController::class, 'show'],
         'matches' => [MatchController::class, 'index'],
         'me' => [AuthController::class, 'me'],
         'me/skills' => [StudentSkillController::class, 'index'],
@@ -35,6 +37,7 @@ return [
     ],
     'PATCH' => [
         'vacancies/{id}' => [VacancyController::class, 'patch'],
+        'applications/{id}' => [ApplicationController::class, 'updateStatus'],
     ],
     'DELETE' => [
         'me/skills/{id}' => [StudentSkillController::class, 'destroy'],

@@ -79,11 +79,37 @@ class RequestHandler
         return $data;
     }
 
+    private function allowedMethods(): array
+    {
+        $allowed = [];
+
+        foreach ($this->routes as $method => $routes) {
+            if (isset($routes[$this->key])) {
+                $allowed[] = $method;
+            }
+        }
+
+        return $allowed;
+    }
+
     public function handle(): void
     {
+        // CORS preflight van de browser
+        if ($this->method === 'OPTIONS') {
+            ApiResponse::preflight();
+        }
+
         $route = $this->routes[$this->method][$this->key] ?? null;
 
         if ($route === null) {
+            $allowed = $this->allowedMethods();
+
+            // url bestaat wel maar niet met deze methode
+            if (!empty($allowed)) {
+                header('Allow: ' . implode(', ', $allowed));
+                ApiResponse::error(ApiResponse::METHOD_NOT_ALLOWED, "De methode {$this->method} is niet toegestaan voor deze url.");
+            }
+
             ApiResponse::error(ApiResponse::NOT_FOUND, 'Deze route bestaat niet.');
         }
 
