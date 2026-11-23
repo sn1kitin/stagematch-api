@@ -69,7 +69,7 @@ class VacancyController extends Controller
     private function save(int $id, array $data, bool $partial): void
     {
         $vacancy = $this->findOrFail($id);
-        Auth::requireRole('company');
+        Auth::requireOwner($vacancy['company_id']);
 
         unset($data['company_id']);
 
@@ -92,7 +92,7 @@ class VacancyController extends Controller
     public function destroy(int $id): void
     {
         $vacancy = $this->findOrFail($id);
-        Auth::requireRole('company');
+        Auth::requireOwner($vacancy['company_id']);
 
         $vacancy = VacancyModel::withDetails($vacancy);
         VacancyModel::delete($id);

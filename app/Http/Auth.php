@@ -57,4 +57,16 @@ class Auth
 
         return $user;
     }
+
+    // een bedrijf mag alleen zijn eigen vacatures aanpassen
+    public static function requireOwner(int $ownerId): array
+    {
+        $user = self::requireRole('company');
+
+        if ($user['id'] !== $ownerId) {
+            ApiResponse::error(ApiResponse::FORBIDDEN, 'Dit is niet jouw vacature.');
+        }
+
+        return $user;
+    }
 }

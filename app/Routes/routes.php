@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MatchController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\StudentSkillController;
 use App\Http\Controllers\VacancyController;
@@ -13,6 +14,7 @@ return [
         'students/{id}/skills' => [StudentSkillController::class, 'forStudent'],
         'vacancies' => [VacancyController::class, 'index'],
         'vacancies/{id}' => [VacancyController::class, 'show'],
+        'matches' => [MatchController::class, 'index'],
         'me' => [AuthController::class, 'me'],
         'me/skills' => [StudentSkillController::class, 'index'],
         'me/vacancies' => [VacancyController::class, 'mine'],
