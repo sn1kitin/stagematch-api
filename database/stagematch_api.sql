@@ -1,6 +1,7 @@
 CREATE DATABASE IF NOT EXISTS `stagematch_api_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `stagematch_api_db`;
 
+DROP TABLE IF EXISTS `applications`;
 DROP TABLE IF EXISTS `vacancy_skills`;
 DROP TABLE IF EXISTS `student_skills`;
 DROP TABLE IF EXISTS `vacancies`;
@@ -50,6 +51,19 @@ CREATE TABLE `vacancy_skills` (
     FOREIGN KEY (`skill_id`) REFERENCES `skills` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `applications` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `vacancy_id` INT UNSIGNED NOT NULL,
+    `student_id` INT UNSIGNED NOT NULL,
+    `motivation` TEXT NULL,
+    `status` ENUM('pending', 'accepted', 'rejected') NOT NULL DEFAULT 'pending',
+    `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NULL DEFAULT NULL,
+    UNIQUE (`vacancy_id`, `student_id`),
+    FOREIGN KEY (`vacancy_id`) REFERENCES `vacancies` (`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`student_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- wachtwoord van alle accounts: wachtwoord
 INSERT INTO `users` (`name`, `email`, `password`, `role`, `created_at`) VALUES
 ('Jan de Vries', 'jan@stagematch.test', '$2y$10$c/1Lbiejhz9eZ1FNLa1/rupUFdwHAENJuQ1iNH.LGND3cz.xK7rXu', 'student', '2026-10-01 09:00:00'),
@@ -86,3 +100,9 @@ INSERT INTO `vacancy_skills` (`vacancy_id`, `skill_id`) VALUES
 (3, 11), (3, 5), (3, 14), (3, 15), (3, 19),
 (4, 1), (4, 2), (4, 5), (4, 9), (4, 6), (4, 18),
 (5, 17), (5, 3), (5, 4), (5, 20);
+
+INSERT INTO `applications` (`vacancy_id`, `student_id`, `motivation`, `status`, `created_at`) VALUES
+(1, 1, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 'pending', '2026-10-10 12:00:00'),
+(2, 2, 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem.', 'accepted', '2026-10-11 09:30:00'),
+(3, 3, 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit.', 'rejected', '2026-10-12 16:45:00'),
+(4, 1, NULL, 'pending', '2026-10-13 08:15:00');

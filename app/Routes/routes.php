@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\SkillController;
@@ -18,6 +19,7 @@ return [
         'me' => [AuthController::class, 'me'],
         'me/skills' => [StudentSkillController::class, 'index'],
         'me/vacancies' => [VacancyController::class, 'mine'],
+        'me/applications' => [ApplicationController::class, 'mine'],
     ],
     'POST' => [
         'register' => [AuthController::class, 'register'],
@@ -25,6 +27,7 @@ return [
         'logout' => [AuthController::class, 'logout'],
         'me/skills' => [StudentSkillController::class, 'store'],
         'vacancies' => [VacancyController::class, 'create'],
+        'vacancies/{id}/applications' => [ApplicationController::class, 'create'],
     ],
     // PUT = alle velden, PATCH = alleen wat je meestuurt
     'PUT' => [
