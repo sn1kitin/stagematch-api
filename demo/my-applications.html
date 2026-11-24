@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mijn sollicitaties - StageMatch</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="style.css?v=10">
+</head>
+<body>
+<header id="nav" class="nav"></header>
+<main class="page">
+    <h1>Mijn sollicitaties</h1>
+
+    <div id="rows" class="list"></div>
+</main>
+
+<script src="api.js?v=4"></script>
+<script>
+    startPage('student');
+
+    async function load() {
+        const applications = (await api('GET', 'me/applications')).data;
+        const rows = document.getElementById('rows');
+
+        if (!applications.length) {
+            rows.innerHTML = '<p class="empty">Je hebt nog nergens op gesolliciteerd. <a href="matches.html">Bekijk je matches</a></p>';
+            return;
+        }
+
+        rows.innerHTML = applications.map(a => `
+            <article class="row-card">
+                <div class="row-body">
+                    <h2>${esc(a.vacancy_title)} – ${esc(a.company_name)}</h2>
+                    <p class="meta">Gesolliciteerd op ${formatDate(a.created_at)}</p>
+                </div>
+                ${statusBadge(a.status)}
+            </article>
+        `).join('');
+    }
+
+    load();
+</script>
+</body>
+</html>

@@ -6,14 +6,11 @@ use App\Database\Database;
 abstract class Model
 {
     protected static string $table;
-    // alleen deze velden mogen door de client worden ingevuld
     protected static array $fillable = [];
-    // welke kolommen terug gaan naar de client
     protected static string $columns = '*';
 
     private static ?Database $db = null;
 
-    // een verbinding voor alle models
     protected static function db(): Database
     {
         if (self::$db === null) {
@@ -46,7 +43,6 @@ abstract class Model
         return self::db()->fetch();
     }
 
-    // alle rijen waar een kolom een bepaalde waarde heeft, bv alle topics van een thread
     public static function where(string $column, mixed $value): array
     {
         $table = static::$table;
@@ -91,7 +87,6 @@ abstract class Model
         return static::find($id);
     }
 
-    // true als er echt iets verwijderd is
     public static function delete(int $id): bool
     {
         $table = static::$table;

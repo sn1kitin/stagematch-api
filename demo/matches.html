@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Matches - StageMatch</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="style.css?v=10">
+</head>
+<body>
+<header id="nav" class="nav"></header>
+<main class="page">
+    <h1>Vacatures die bij je passen</h1>
+    <p class="intro">Hoe meer gevraagde skills je hebt, hoe hoger de vacature staat. <a href="skills.html">Skills aanpassen</a></p>
+
+    <div id="matches" class="list"></div>
+</main>
+
+<script src="api.js?v=4"></script>
+<script>
+    startPage('student');
+
+    async function load() {
+        const matches = (await api('GET', 'matches')).data;
+        const applications = (await api('GET', 'me/applications')).data;
+        const applied = applications.map(a => a.vacancy_id);
+
+        const div = document.getElementById('matches');
+        div.innerHTML = matches.length ? '' : '<p class="empty">Er zijn nog geen vacatures.</p>';
+
+        for (const v of matches) {
+            const card = document.createElement('article');
+            card.className = 'match-card';
+            const done = applied.includes(v.id);
+
+            card.innerHTML = `
+                <div class="match-body">
+                    <h2 class="match-title">${esc(v.title)} – ${esc(v.company.name)}</h2>
+                    <p class="meta">${esc(v.location)}</p>
+                    <p class="description">${esc(v.description)}</p>
+                    ${skillGroups(v.matched_skills, v.missing_skills)}
+                </div>
+                ${ring(v.match_percentage)}
+                <div class="match-footer">
+                    ${done ? `<p class="applied">${icons.check}Je hebt hier al op gesolliciteerd.</p>` : `
+                        <div class="inline">
+                            <textarea rows="2" placeholder="Motivatie (mag leeg)"></textarea>
+                            <button class="btn">Solliciteren</button>
+                        </div>
+                        <p class="message"></p>
+                    `}
+                </div>
+            `;
+
+            if (!done) {
+                card.querySelector('button').onclick = () => apply(v.id, card);
+            }
+
+            div.appendChild(card);
+        }
+    }
+
+    async function apply(id, card) {
+        const motivation = card.querySelector('textarea').value;
+        const json = await api('POST', `vacancies/${id}/applications`, motivation ? { motivation } : {});
+
+        if (json.status !== 201) {
+            card.querySelector('.message').textContent = errorText(json);
+            return;
+        }
+
+        load();
+    }
+
+    load();
+</script>
+</body>
+</html>

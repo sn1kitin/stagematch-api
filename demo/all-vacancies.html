@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alle vacatures - StageMatch</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="style.css?v=10">
+</head>
+<body>
+<header id="nav" class="nav"></header>
+<main class="page">
+    <h1>Alle vacatures</h1>
+    <p class="intro">Bekijk welke stages andere bedrijven aanbieden en welke skills ze vragen.</p>
+
+    <label class="field">
+        Bedrijf
+        <select id="company"></select>
+    </label>
+
+    <div id="vacancies" class="list"></div>
+</main>
+
+<script src="api.js?v=4"></script>
+<script>
+    const user = startPage('company');
+    let vacancies = [];
+
+    async function load() {
+        vacancies = (await api('GET', 'vacancies')).data;
+        vacancies.sort((a, b) => b.created_at.localeCompare(a.created_at));
+
+        const companies = new Map(vacancies.map(v => [v.company.id, v.company.name]));
+        document.getElementById('company').innerHTML = '<option value="">Alle bedrijven</option>' +
+            [...companies].map(([id, name]) => `<option value="${id}">${esc(name)}</option>`).join('');
+
+        show();
+    }
+
+    function show() {
+        const companyId = Number(document.getElementById('company').value);
+        const list = companyId ? vacancies.filter(v => v.company.id === companyId) : vacancies;
+        const div = document.getElementById('vacancies');
+
+        if (!list.length) {
+            div.innerHTML = '<p class="empty">Er zijn nog geen vacatures.</p>';
+            return;
+        }
+
+        div.innerHTML = list.map(v => {
+            const own = v.company.id === user.id;
+
+            return `
+                <article class="panel">
+                    <div class="page-head">
+                        <h2>${esc(v.title)} – ${esc(v.company.name)}</h2>
+                        ${own ? '<span class="status accepted">Jouw vacature</span>' : ''}
+                    </div>
+                    <p class="meta">${esc(v.location)} · geplaatst op ${formatDate(v.created_at)}</p>
+                    <p class="description">${esc(v.description)}</p>
+                    <div class="group">
+                        <div class="group-label missing">Gevraagde skills:</div>
+                        ${v.skills.length ? chips(v.skills, 'neutral') : '<p class="meta">Geen, iedereen past.</p>'}
+                    </div>
+                    ${own ? `
+                        <div class="actions">
+                            <a class="btn" href="applications.html?vacancy=${v.id}">Sollicitaties</a>
+                            <a class="btn ghost" href="vacancy-form.html?id=${v.id}">Aanpassen</a>
+                        </div>
+                    ` : ''}
+                </article>
+            `;
+        }).join('');
+    }
+
+    document.getElementById('company').onchange = show;
+
+    load();
+</script>
+</body>
+</html>

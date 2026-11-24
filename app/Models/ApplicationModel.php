@@ -16,7 +16,6 @@ class ApplicationModel extends Model
         return self::db()->fetch();
     }
 
-    // sollicitaties van een student, met de vacature en het bedrijf erbij
     public static function forStudent(int $studentId): array
     {
         self::db()->query(
@@ -31,7 +30,6 @@ class ApplicationModel extends Model
         return self::db()->fetchAll();
     }
 
-    // alle sollicitaties op de vacatures van een bedrijf
     public static function forCompany(int $companyId): array
     {
         self::db()->query(

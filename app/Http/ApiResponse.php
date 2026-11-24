@@ -58,18 +58,15 @@ class ApiResponse
         exit;
     }
 
-    // antwoord op de preflight van de browser (OPTIONS)
     public static function preflight(): void
     {
         header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
         header('Access-Control-Allow-Headers: Content-Type, Accept, Authorization');
         header('Access-Control-Max-Age: 86400');
 
-        // ook hier de vaste json structuur
         self::send(null);
     }
 
-    // volledige url voor de Location header, bv http://localhost/stagematch-api/vacancies/5
     public static function url(string $path): string
     {
         $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
@@ -86,7 +83,6 @@ class ApiResponse
         header('Content-Type: application/json; charset=utf-8');
     }
 
-    // deze velden moeten in elke response zitten
     private static function base(int $status, int $count): array
     {
         return [
@@ -98,7 +94,6 @@ class ApiResponse
         ];
     }
 
-    // lijst = aantal items, een record = 1, niks = 0
     private static function count(mixed $data): int
     {
         if ($data === null) {

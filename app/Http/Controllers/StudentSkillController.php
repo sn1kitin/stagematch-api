@@ -9,7 +9,6 @@ use App\Models\UserModel;
 
 class StudentSkillController extends Controller
 {
-    // GET /students/{id}/skills
     public function forStudent(int $id): void
     {
         $student = UserModel::find($id);
@@ -23,7 +22,6 @@ class StudentSkillController extends Controller
         ApiResponse::send($student);
     }
 
-    // GET /me/skills
     public function index(): void
     {
         $student = Auth::requireRole('student');
@@ -31,7 +29,6 @@ class StudentSkillController extends Controller
         ApiResponse::send(StudentSkillModel::forStudent($student['id']));
     }
 
-    // POST /me/skills
     public function store(array $data): void
     {
         $student = Auth::requireRole('student');
@@ -51,7 +48,6 @@ class StudentSkillController extends Controller
         ApiResponse::send(StudentSkillModel::forStudent($student['id']), ApiResponse::CREATED);
     }
 
-    // DELETE /me/skills/{id}
     public function destroy(int $skillId): void
     {
         $student = Auth::requireRole('student');

@@ -31,7 +31,6 @@ return [
         'vacancies' => [VacancyController::class, 'create'],
         'vacancies/{id}/applications' => [ApplicationController::class, 'create'],
     ],
-    // PUT = alle velden, PATCH = alleen wat je meestuurt
     'PUT' => [
         'vacancies/{id}' => [VacancyController::class, 'update'],
     ],

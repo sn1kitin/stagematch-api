@@ -7,7 +7,6 @@ use App\Models\UserModel;
 
 class AuthController extends Controller
 {
-    // POST /register
     public function register(array $data): void
     {
         $this->validate($data, [
@@ -26,7 +25,6 @@ class AuthController extends Controller
         ApiResponse::send(UserModel::create($data), ApiResponse::CREATED);
     }
 
-    // POST /login -> geeft een token terug
     public function login(array $data): void
     {
         $this->validate($data, [
@@ -49,7 +47,6 @@ class AuthController extends Controller
         ]);
     }
 
-    // POST /logout
     public function logout(): void
     {
         $user = Auth::requireUser();
@@ -58,7 +55,6 @@ class AuthController extends Controller
         ApiResponse::send(null);
     }
 
-    // GET /me
     public function me(): void
     {
         ApiResponse::send(Auth::requireUser());

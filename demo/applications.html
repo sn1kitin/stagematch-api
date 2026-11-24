@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sollicitaties - StageMatch</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="style.css?v=10">
+</head>
+<body>
+<header id="nav" class="nav"></header>
+<main class="page">
+    <h1 id="title">Sollicitaties</h1>
+    <p id="info" class="intro"></p>
+
+    <div id="rows" class="list"></div>
+</main>
+
+<script src="api.js?v=4"></script>
+<script>
+    startPage('company');
+
+    const vacancyId = new URLSearchParams(location.search).get('vacancy');
+
+    async function load() {
+        let applications;
+
+        if (vacancyId) {
+            const vacancy = (await api('GET', 'vacancies/' + vacancyId)).data;
+            document.getElementById('title').textContent = 'Sollicitaties: ' + vacancy.title;
+            document.getElementById('info').innerHTML = '<a href="applications.html">Alle sollicitaties</a>';
+            applications = (await api('GET', `vacancies/${vacancyId}/applications`)).data;
+            applications.sort((a, b) => b.match_percentage - a.match_percentage);
+        } else {
+            document.getElementById('info').textContent = 'Alle sollicitaties op jouw vacatures, met hoe goed de student past.';
+            applications = (await api('GET', 'me/applications')).data;
+        }
+
+        const rows = document.getElementById('rows');
+        rows.innerHTML = applications.length ? '' : '<p class="empty">Nog geen sollicitaties.</p>';
+
+        for (const a of applications) {
+            const card = document.createElement('article');
+            card.className = 'match-card';
+            card.innerHTML = `
+                <div class="match-body">
+                    <h2 class="match-title">${esc(a.student_name)}</h2>
+                    <p class="meta">${vacancyId ? '' : esc(a.vacancy_title) + ' · '}${formatDate(a.created_at)}</p>
+                    ${a.motivation ? `<p class="description">${esc(a.motivation)}</p>` : ''}
+                    ${skillGroups(a.matched_skills, a.missing_skills, 'company')}
+                </div>
+                ${ring(a.match_percentage)}
+                <div class="match-footer">
+                    <label class="status-pick">
+                        Status
+                        <select>
+                            <option value="pending">In behandeling</option>
+                            <option value="accepted">Aangenomen</option>
+                            <option value="rejected">Afgewezen</option>
+                        </select>
+                        <span></span>
+                    </label>
+                </div>
+            `;
+
+            const select = card.querySelector('select');
+            select.value = a.status;
+            select.onchange = async () => {
+                const json = await api('PATCH', 'applications/' + a.id, { status: select.value });
+                card.querySelector('.status-pick span').textContent = json.status === 200 ? 'Opgeslagen' : errorText(json);
+            };
+
+            rows.appendChild(card);
+        }
+    }
+
+    load();
+</script>
+</body>
+</html>

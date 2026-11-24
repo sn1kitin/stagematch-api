@@ -1,0 +1,710 @@
+{
+    "info": {
+        "name": "StageMatch API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Register student",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "register"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Emma de Boer\",\n    \"email\": \"emma@stagematch.test\",\n    \"password\": \"wachtwoord\",\n    \"role\": \"student\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Register bedrijf",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "register"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Dolor B.V.\",\n    \"email\": \"info@dolor.test\",\n    \"password\": \"wachtwoord\",\n    \"role\": \"company\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Login student",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "login"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"jan@stagematch.test\",\n    \"password\": \"wachtwoord\"\n}"
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const json = pm.response.json();",
+                                    "if (json.data && json.data.token) {",
+                                    "    pm.collectionVariables.set('token_student', json.data.token);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Login bedrijf",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "login"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"info@pixelwerk.test\",\n    \"password\": \"wachtwoord\"\n}"
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const json = pm.response.json();",
+                                    "if (json.data && json.data.token) {",
+                                    "    pm.collectionVariables.set('token_company', json.data.token);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Me",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_student}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "me"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_student}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/logout",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "logout"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Skills",
+            "item": [
+                {
+                    "name": "Alle skills",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/skills",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "skills"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Een skill",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/skills/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "skills",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Skills van een student",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/students/1/skills",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students",
+                                "1",
+                                "skills"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Mijn skills",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_student}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/me/skills",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "me",
+                                "skills"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Skill toevoegen",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_student}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/me/skills",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "me",
+                                "skills"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"skill_id\": 7\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Skill verwijderen",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_student}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/me/skills/7",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "me",
+                                "skills",
+                                "7"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Vacatures",
+            "item": [
+                {
+                    "name": "Alle vacatures",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/vacancies",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vacancies"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Een vacature",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/vacancies/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vacancies",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Mijn vacatures",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_company}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/me/vacancies",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "me",
+                                "vacancies"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Vacature maken",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_company}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/vacancies",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vacancies"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"Stage Java developer\",\n    \"description\": \"Je bouwt mee aan onze interne tools en leert werken in een klein team.\",\n    \"location\": \"Groningen\",\n    \"skills\": [\n        1,\n        5,\n        6\n    ]\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Vacature aanpassen (PUT)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_company}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/vacancies/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vacancies",
+                                "1"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"Stage back-end developer\",\n    \"description\": \"Je bouwt mee aan onze interne tools en leert werken in een klein team.\",\n    \"location\": \"Groningen\",\n    \"skills\": [\n        1,\n        5,\n        6,\n        7\n    ]\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Vacature aanpassen (PATCH)",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_company}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/vacancies/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vacancies",
+                                "1"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"skills\": [\n        1,\n        5\n    ]\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Andermans vacature aanpassen (403)",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_company}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/vacancies/3",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vacancies",
+                                "3"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"Stage back-end developer (Laravel)\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Vacature verwijderen",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_company}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/vacancies/2",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vacancies",
+                                "2"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Matching",
+            "item": [
+                {
+                    "name": "Matches",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_student}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/matches",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "matches"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Sollicitaties",
+            "item": [
+                {
+                    "name": "Solliciteren",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_student}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/vacancies/2/applications",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vacancies",
+                                "2",
+                                "applications"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"motivation\": \"Ik wil graag leren hoe een API in een echt bedrijf wordt gebouwd.\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Mijn sollicitaties (student)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_student}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/me/applications",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "me",
+                                "applications"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Sollicitaties op mijn vacatures (bedrijf)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_company}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/me/applications",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "me",
+                                "applications"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Sollicitaties van een vacature",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_company}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/vacancies/1/applications",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "vacancies",
+                                "1",
+                                "applications"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Een sollicitatie",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_student}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/applications/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "applications",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Status aanpassen",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token_company}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/applications/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "applications",
+                                "1"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"status\": \"accepted\"\n}"
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost/stagematch-api"
+        },
+        {
+            "key": "token_student",
+            "value": ""
+        },
+        {
+            "key": "token_company",
+            "value": ""
+        }
+    ]
+}

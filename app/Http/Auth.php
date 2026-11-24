@@ -5,12 +5,10 @@ use App\Models\UserModel;
 
 class Auth
 {
-    // token uit de header: Authorization: Bearer <token>
     public static function token(): ?string
     {
         $header = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
 
-        // zelfde probleem als bij het forum, apache geeft de header niet altijd door
         if ($header === '' && function_exists('getallheaders')) {
             $headers = array_change_key_case(getallheaders(), CASE_LOWER);
             $header = $headers['authorization'] ?? '';
@@ -45,7 +43,6 @@ class Auth
         return $user;
     }
 
-    // student of company
     public static function requireRole(string $role): array
     {
         $user = self::requireUser();
@@ -58,7 +55,6 @@ class Auth
         return $user;
     }
 
-    // een bedrijf mag alleen zijn eigen vacatures aanpassen
     public static function requireOwner(int $ownerId): array
     {
         $user = self::requireRole('company');

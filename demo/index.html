@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>StageMatch</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="style.css?v=10">
+</head>
+<body>
+<main class="page">
+    <section class="hero">
+        <h1>Stage<span>Match</span></h1>
+        <p>De juiste student bij het juiste bedrijf. Zie direct welke stages bij jouw skills passen, en wat je nog mist.</p>
+        <div class="actions">
+            <a class="btn" href="login.html">Inloggen</a>
+            <a class="btn ghost" href="register.html">Registreren</a>
+        </div>
+    </section>
+
+    <article class="match-card">
+        <div class="match-body">
+            <h2 class="match-title">Stage back-end developer – Pixelwerk</h2>
+            <div id="example"></div>
+        </div>
+        <div id="example-ring"></div>
+    </article>
+</main>
+
+<script src="api.js?v=4"></script>
+<script>
+    const user = getUser();
+    if (user) {
+        location.href = homeFor(user);
+    }
+
+    const have = ['PHP', 'SQL', 'Git', 'REST API'].map(name => ({ name }));
+    document.getElementById('example').outerHTML = skillGroups(have, [{ name: 'Laravel' }]);
+    document.getElementById('example-ring').outerHTML = ring(80);
+</script>
+</body>
+</html>

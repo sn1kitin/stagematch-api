@@ -6,7 +6,6 @@ class VacancyModel extends Model
     protected static string $table = 'vacancies';
     protected static array $fillable = ['company_id', 'title', 'description', 'location'];
 
-    // vacature met bedrijfsnaam en gevraagde skills
     public static function withDetails(array $vacancy): array
     {
         $company = UserModel::find($vacancy['company_id']);
@@ -28,7 +27,6 @@ class VacancyModel extends Model
         return self::db()->fetchAll();
     }
 
-    // oude skills eruit en de nieuwe erin
     public static function setSkills(int $vacancyId, array $skillIds): void
     {
         self::db()->query('DELETE FROM `vacancy_skills` WHERE `vacancy_id` = :id', ['id' => $vacancyId]);

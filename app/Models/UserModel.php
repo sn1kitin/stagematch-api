@@ -5,10 +5,8 @@ class UserModel extends Model
 {
     protected static string $table = 'users';
     protected static array $fillable = ['name', 'email', 'password', 'role'];
-    // wachtwoord, email en token mogen nooit in een response
     protected static string $columns = '`id`, `name`, `role`, `created_at`, `updated_at`';
 
-    // met wachtwoord, alleen voor het inloggen
     public static function findByEmail(string $email): ?array
     {
         self::db()->query('SELECT * FROM `users` WHERE `email` = :email', ['email' => $email]);
@@ -16,7 +14,6 @@ class UserModel extends Model
         return self::db()->fetch();
     }
 
-    // in de database staat alleen de hash van de token
     public static function findByToken(string $token): ?array
     {
         $columns = static::$columns;

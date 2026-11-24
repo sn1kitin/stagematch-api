@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vacature - StageMatch</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="style.css?v=10">
+</head>
+<body>
+<header id="nav" class="nav"></header>
+<main class="page">
+    <h1 id="title">Nieuwe vacature</h1>
+
+    <form id="form" class="panel form">
+        <label class="field">Titel<input name="title" required></label>
+        <label class="field">Locatie<input name="location" required></label>
+        <label class="field">Omschrijving<textarea name="description" rows="5" required></textarea></label>
+        <div class="field">
+            Gevraagde skills
+            <div id="skills" class="pick"></div>
+        </div>
+        <p id="message" class="message"></p>
+        <div class="actions">
+            <button class="btn">Opslaan</button>
+            <a class="btn ghost" href="vacancies.html">Terug</a>
+        </div>
+    </form>
+</main>
+
+<script src="api.js?v=4"></script>
+<script>
+    startPage('company');
+
+    const id = new URLSearchParams(location.search).get('id');
+    const form = document.getElementById('form');
+
+    async function load() {
+        const skills = (await api('GET', 'skills')).data;
+        let checked = [];
+
+        if (id) {
+            const json = await api('GET', 'vacancies/' + id);
+            const v = json.data;
+            document.getElementById('title').textContent = 'Vacature aanpassen';
+            form.title.value = v.title;
+            form.location.value = v.location;
+            form.description.value = v.description;
+            checked = v.skills.map(s => s.id);
+        }
+
+        document.getElementById('skills').innerHTML = skills.map(s => `
+            <label><input type="checkbox" name="skills" value="${s.id}" ${checked.includes(s.id) ? 'checked' : ''}>${esc(s.name)}</label>
+        `).join('');
+    }
+
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+
+        const body = {
+            title: form.title.value,
+            location: form.location.value,
+            description: form.description.value,
+            skills: [...form.querySelectorAll('[name=skills]:checked')].map(c => Number(c.value)),
+        };
+
+        const json = id ? await api('PUT', 'vacancies/' + id, body) : await api('POST', 'vacancies', body);
+
+        if (json.status !== 200 && json.status !== 201) {
+            document.getElementById('message').textContent = errorText(json);
+            return;
+        }
+
+        location.href = 'vacancies.html';
+    };
+
+    load();
+</script>
+</body>
+</html>

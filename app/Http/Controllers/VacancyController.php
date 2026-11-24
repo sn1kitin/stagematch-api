@@ -15,7 +15,6 @@ class VacancyController extends Controller
         'skills' => 'required|array',
     ];
 
-    // GET /vacancies
     public function index(): void
     {
         $vacancies = array_map([VacancyModel::class, 'withDetails'], VacancyModel::all());
@@ -23,13 +22,11 @@ class VacancyController extends Controller
         ApiResponse::send($vacancies);
     }
 
-    // GET /vacancies/{id}
     public function show(int $id): void
     {
         ApiResponse::send(VacancyModel::withDetails($this->findOrFail($id)));
     }
 
-    // GET /me/vacancies -> vacatures van het ingelogde bedrijf
     public function mine(): void
     {
         $company = Auth::requireRole('company');
@@ -38,7 +35,6 @@ class VacancyController extends Controller
         ApiResponse::send($vacancies);
     }
 
-    // POST /vacancies
     public function create(array $data): void
     {
         $company = Auth::requireRole('company');
@@ -54,13 +50,11 @@ class VacancyController extends Controller
         ApiResponse::send(VacancyModel::withDetails($vacancy), ApiResponse::CREATED);
     }
 
-    // PUT /vacancies/{id}
     public function update(int $id, array $data): void
     {
         $this->save($id, $data, false);
     }
 
-    // PATCH /vacancies/{id}
     public function patch(int $id, array $data): void
     {
         $this->save($id, $data, true);
@@ -80,7 +74,6 @@ class VacancyController extends Controller
             VacancyModel::setSkills($id, $data['skills']);
         }
 
-        // alleen skills meegestuurd, dan hoeft de vacature zelf niet aangepast
         if (!empty(array_intersect_key($data, array_flip(['title', 'description', 'location'])))) {
             $vacancy = VacancyModel::update($id, $data);
         }
@@ -88,7 +81,6 @@ class VacancyController extends Controller
         ApiResponse::send(VacancyModel::withDetails($vacancy));
     }
 
-    // DELETE /vacancies/{id}
     public function destroy(int $id): void
     {
         $vacancy = $this->findOrFail($id);
@@ -111,7 +103,6 @@ class VacancyController extends Controller
         return $vacancy;
     }
 
-    // elke skill moet een geldig id zijn dat in de skills tabel staat
     private function validateSkills(array $skills): void
     {
         $wrong = [];

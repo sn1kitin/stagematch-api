@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mijn vacatures - StageMatch</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="style.css?v=10">
+</head>
+<body>
+<header id="nav" class="nav"></header>
+<main class="page">
+    <div class="page-head">
+        <h1>Mijn vacatures</h1>
+        <a class="btn" href="vacancy-form.html">+ Nieuwe vacature</a>
+    </div>
+
+    <div id="vacancies" class="list"></div>
+</main>
+
+<script src="api.js?v=4"></script>
+<script>
+    startPage('company');
+
+    async function load() {
+        const vacancies = (await api('GET', 'me/vacancies')).data;
+        const div = document.getElementById('vacancies');
+
+        if (!vacancies.length) {
+            div.innerHTML = '<p class="empty">Je hebt nog geen vacatures.</p>';
+            return;
+        }
+
+        div.innerHTML = '';
+
+        for (const v of vacancies) {
+            const card = document.createElement('article');
+            card.className = 'panel';
+            card.innerHTML = `
+                <h2>${esc(v.title)}</h2>
+                <p class="meta">${esc(v.location)}</p>
+                <p class="description">${esc(v.description)}</p>
+                <div class="group">
+                    <div class="group-label missing">Gevraagde skills:</div>
+                    ${v.skills.length ? chips(v.skills, 'neutral') : '<p class="meta">Geen, iedereen past.</p>'}
+                </div>
+                <div class="actions">
+                    <a class="btn" href="applications.html?vacancy=${v.id}">Sollicitaties</a>
+                    <a class="btn ghost" href="vacancy-form.html?id=${v.id}">Aanpassen</a>
+                    <button class="btn danger">Verwijderen</button>
+                </div>
+            `;
+            card.querySelector('button').onclick = () => remove(v);
+            div.appendChild(card);
+        }
+    }
+
+    async function remove(vacancy) {
+        if (!confirm(`Vacature "${vacancy.title}" verwijderen?`)) {
+            return;
+        }
+
+        await api('DELETE', 'vacancies/' + vacancy.id);
+        load();
+    }
+
+    load();
+</script>
+</body>
+</html>

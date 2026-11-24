@@ -5,7 +5,6 @@ class RequestHandler
 {
     private array $routes;
     private string $method;
-    // bv vacancies/{id}/applications
     private string $key = '';
     private array $ids = [];
 
@@ -21,7 +20,6 @@ class RequestHandler
     {
         $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-        // projectmap eraf halen, bv /stagematch-api
         $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
         if ($base !== '' && str_starts_with($path, $base)) {
             $path = substr($path, strlen($base));
@@ -29,7 +27,6 @@ class RequestHandler
 
         $segments = array_values(array_filter(explode('/', strtolower($path)), fn($s) => $s !== ''));
 
-        // een getal is een id, de rest is een resource. Om en om werkt niet meer door me/skills/3
         $parts = [];
         foreach ($segments as $segment) {
             if (!ctype_digit($segment)) {
@@ -48,7 +45,6 @@ class RequestHandler
         $this->key = implode('/', $parts);
     }
 
-    // json body of gewone formdata
     private function getBody(): array
     {
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
@@ -73,7 +69,6 @@ class RequestHandler
             return $_POST;
         }
 
-        // bij PUT en PATCH vult php $_POST niet, dus zelf de body uitlezen
         parse_str(file_get_contents('php://input'), $data);
 
         return $data;
@@ -94,7 +89,6 @@ class RequestHandler
 
     public function handle(): void
     {
-        // CORS preflight van de browser
         if ($this->method === 'OPTIONS') {
             ApiResponse::preflight();
         }
@@ -104,7 +98,6 @@ class RequestHandler
         if ($route === null) {
             $allowed = $this->allowedMethods();
 
-            // url bestaat wel maar niet met deze methode
             if (!empty($allowed)) {
                 header('Allow: ' . implode(', ', $allowed));
                 ApiResponse::error(ApiResponse::METHOD_NOT_ALLOWED, "De methode {$this->method} is niet toegestaan voor deze url.");
@@ -116,7 +109,6 @@ class RequestHandler
         [$class, $action] = $route;
         $controller = new $class();
 
-        // eerst de ids uit de url, daarna de body
         $args = $this->ids;
 
         if (in_array($this->method, ['POST', 'PUT', 'PATCH'])) {

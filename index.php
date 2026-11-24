@@ -10,7 +10,6 @@ try {
     $handler = new RequestHandler($routes);
     $handler->handle();
 } catch (Throwable $e) {
-    // echte fout alleen in de log, niet naar de client
     error_log($e->getMessage());
     ApiResponse::error(ApiResponse::SERVER_ERROR, 'Er is iets misgegaan op de server.');
 }

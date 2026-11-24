@@ -9,7 +9,6 @@ use App\Services\Matcher;
 
 class MatchController extends Controller
 {
-    // GET /matches -> alle vacatures, beste match bovenaan
     public function index(): void
     {
         $student = Auth::requireRole('student');
@@ -21,7 +20,6 @@ class MatchController extends Controller
             $matches[] = array_merge($vacancy, Matcher::match($vacancy['skills'], $skillIds));
         }
 
-        // bij gelijk percentage de vacature met minder ontbrekende skills eerst
         usort($matches, function ($a, $b) {
             return [$b['match_percentage'], count($a['missing_skills'])] <=> [$a['match_percentage'], count($b['missing_skills'])];
         });

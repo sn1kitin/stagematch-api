@@ -5,8 +5,6 @@ use App\Http\ApiResponse;
 
 abstract class Controller
 {
-    // regels zoals 'required|string|max:100', stuurt meteen een 422 als er fouten zijn
-    // $partial is voor PATCH, dan worden alleen de meegestuurde velden gecontroleerd
     protected function validate(array $data, array $rules, bool $partial = false): void
     {
         $errors = [];
@@ -80,7 +78,6 @@ abstract class Controller
                 }
                 break;
 
-            // in:student,company
             case 'in':
                 if (!in_array($value, explode(',', $param), true)) {
                     return "Het veld {$field} moet een van deze waarden zijn: {$param}.";
@@ -93,7 +90,6 @@ abstract class Controller
                 }
                 break;
 
-            // exists:App\Models\SkillModel -> id moet in die tabel staan (altijd na int zetten)
             case 'exists':
                 if ($param::find((int) $value) === null) {
                     return "Het veld {$field} verwijst naar id {$value}, maar die bestaat niet.";

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mijn skills - StageMatch</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="style.css?v=10">
+</head>
+<body>
+<header id="nav" class="nav"></header>
+<main class="page">
+    <h1>Mijn skills</h1>
+    <p class="intro">Je matches worden berekend met deze skills. <a href="matches.html">Bekijk je matches</a></p>
+
+    <section class="panel">
+        <h2>Wat je al kunt</h2>
+        <div id="skills" class="chips"></div>
+    </section>
+
+    <section class="panel">
+        <h2>Skill toevoegen</h2>
+        <div class="inline">
+            <select id="choice"></select>
+            <button id="add" class="btn">Toevoegen</button>
+        </div>
+        <p id="message" class="message"></p>
+    </section>
+</main>
+
+<script src="api.js?v=4"></script>
+<script>
+    startPage('student');
+
+    async function load() {
+        const all = (await api('GET', 'skills')).data;
+        const mine = (await api('GET', 'me/skills')).data;
+        const mineIds = mine.map(s => s.id);
+
+        const list = document.getElementById('skills');
+        list.innerHTML = mine.length ? '' : '<p class="intro">Je hebt nog geen skills.</p>';
+
+        for (const skill of mine) {
+            const chip = document.createElement('span');
+            chip.className = 'chip have';
+            chip.innerHTML = `${esc(skill.name)} <button aria-label="${esc(skill.name)} verwijderen">×</button>`;
+            chip.querySelector('button').onclick = () => remove(skill.id);
+            list.appendChild(chip);
+        }
+
+        document.getElementById('choice').innerHTML = all
+            .filter(s => !mineIds.includes(s.id))
+            .map(s => `<option value="${s.id}">${esc(s.name)}</option>`)
+            .join('');
+    }
+
+    async function remove(id) {
+        await api('DELETE', 'me/skills/' + id);
+        load();
+    }
+
+    document.getElementById('add').onclick = async () => {
+        const json = await api('POST', 'me/skills', { skill_id: document.getElementById('choice').value });
+        document.getElementById('message').textContent = json.status === 201 ? '' : errorText(json);
+        load();
+    };
+
+    load();
+</script>
+</body>
+</html>

@@ -6,7 +6,6 @@ use PDOStatement;
 
 class Database
 {
-    // XAMPP standaard: root zonder wachtwoord
     private string $host = '127.0.0.1';
     private string $dbName = 'stagematch_api_db';
     private string $user = 'root';
@@ -17,6 +16,15 @@ class Database
 
     public function __construct()
     {
+        $file = __DIR__ . '/../../config.php';
+        if (file_exists($file)) {
+            $config = require $file;
+            $this->host = $config['host'];
+            $this->dbName = $config['database'];
+            $this->user = $config['user'];
+            $this->pass = $config['password'];
+        }
+
         $this->pdo = new PDO(
             "mysql:host={$this->host};dbname={$this->dbName};charset=utf8mb4",
             $this->user,

@@ -10,7 +10,6 @@ use App\Services\Matcher;
 
 class ApplicationController extends Controller
 {
-    // POST /vacancies/{id}/applications
     public function create(int $vacancyId, array $data): void
     {
         $student = Auth::requireRole('student');
@@ -37,7 +36,6 @@ class ApplicationController extends Controller
         ApiResponse::send($application, ApiResponse::CREATED);
     }
 
-    // GET /applications/{id} -> alleen de student zelf of het bedrijf van de vacature
     public function show(int $id): void
     {
         $user = Auth::requireUser();
@@ -52,7 +50,6 @@ class ApplicationController extends Controller
         ApiResponse::send($application);
     }
 
-    // GET /me/applications -> student: eigen sollicitaties, bedrijf: alle op eigen vacatures
     public function mine(): void
     {
         $user = Auth::requireUser();
@@ -61,10 +58,18 @@ class ApplicationController extends Controller
             ApiResponse::send(ApplicationModel::forStudent($user['id']));
         }
 
-        ApiResponse::send(ApplicationModel::forCompany($user['id']));
+        $vacancySkills = [];
+        $applications = [];
+
+        foreach (ApplicationModel::forCompany($user['id']) as $application) {
+            $vacancyId = $application['vacancy_id'];
+            $vacancySkills[$vacancyId] ??= VacancyModel::skills($vacancyId);
+            $applications[] = $this->withMatch($application, $vacancySkills[$vacancyId]);
+        }
+
+        ApiResponse::send($applications);
     }
 
-    // GET /vacancies/{id}/applications -> met hoe goed elke student past
     public function forVacancy(int $vacancyId): void
     {
         $vacancy = VacancyModel::find($vacancyId);
@@ -79,14 +84,19 @@ class ApplicationController extends Controller
         $applications = [];
 
         foreach (ApplicationModel::forVacancy($vacancyId) as $application) {
-            $skillIds = array_column(StudentSkillModel::forStudent($application['student_id']), 'id');
-            $applications[] = array_merge($application, Matcher::match($vacancySkills, $skillIds));
+            $applications[] = $this->withMatch($application, $vacancySkills);
         }
 
         ApiResponse::send($applications);
     }
 
-    // PATCH /applications/{id} -> bedrijf zet de status
+    private function withMatch(array $application, array $vacancySkills): array
+    {
+        $skillIds = array_column(StudentSkillModel::forStudent($application['student_id']), 'id');
+
+        return array_merge($application, Matcher::match($vacancySkills, $skillIds));
+    }
+
     public function updateStatus(int $id, array $data): void
     {
         [$application, $vacancy] = $this->findOrFail($id);
